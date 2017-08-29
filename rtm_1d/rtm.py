@@ -14,7 +14,7 @@ class Rtm(object):
         assert receivers.ndim == 2
         source = source[np.newaxis, :]
         source_x = np.array([source_x])
-        num_imaging_steps = int(receivers.shape[1] / imaging_condition_interval) - 1
+        num_imaging_steps = int((receivers.shape[1] - 1) / imaging_condition_interval)
 
         prop = Pml2(model, self.dx, self.dt, self.pml_width, self.profile)
         nx = len(model)
@@ -71,10 +71,10 @@ class Rtm(object):
                 start_time_step = receiver.shape[1]
             receiver_snapshot = \
                     prop.step(start_time_step - end_time_step,
-                              receivers[:, start_time_step-1:end_time_step-1:-1],
+                              receivers[:, start_time_step:end_time_step:-1],
                               receivers_x)
             image += (source_snapshots[imaging_step, :] *
-                      receiver_snapshot[:])
+                      receiver_snapshot[:] * imaging_condition_interval)
 
         return image
 
