@@ -9,7 +9,7 @@ class Rtm(object):
         self.profile = profile
 
     def migrate_shot(self, model, source, source_x, receivers, receivers_x,
-                     imaging_condition_interval=1):
+                     imaging_condition_interval=1, ):
         assert source.ndim == 1
         assert receivers.ndim == 2
         source = source[np.newaxis, :]
@@ -65,10 +65,10 @@ class Rtm(object):
 
         image = np.zeros([nx], np.float32)
         for imaging_step in range(num_imaging_steps - 1, -1, -1):
-            start_time_step = (imaging_step + 1) * imaging_condition_interval
+            start_time_step = (imaging_step + 2) * imaging_condition_interval - 1
             end_time_step = start_time_step - imaging_condition_interval
-            if start_time_step > receivers.shape[1]:
-                start_time_step = receiver.shape[1]
+            if start_time_step >= receivers.shape[1]:
+                start_time_step = receivers.shape[1] - 1
             receiver_snapshot = \
                     prop.step(start_time_step - end_time_step,
                               receivers[:, start_time_step:end_time_step:-1],
